@@ -1,7 +1,6 @@
 ---
 title: '17: Metagenomics co-occurence networks'
 author: "Ji H. Kang"
-date: "5/28/2019"
 output: github_document
 ---
 
