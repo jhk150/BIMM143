@@ -1,7 +1,8 @@
 ## BIMM143
 Introduction to Bioinformatics
-  Ji Hyun Kang 
-  UCSD
+
+Ji Hyun Kang 
+UCSD
 
 This is my classwork from [BIMM143 Spring 2019](https://bioboot.github.io/bimm143_S19/) at UCSD
 
