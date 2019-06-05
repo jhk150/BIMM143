@@ -1,7 +1,6 @@
 ---
 title: "class15: Pathway Analysis from RNA-Seq Results"
 author: "Ji H. Kang"
-date: "5/21/2019"
 output: github_document
 ---
 
