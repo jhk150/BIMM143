@@ -1,8 +1,7 @@
 ---
 title: '18'
 author: "Ji H. Kang"
-date: "5/30/2019"
-output: html_document
+output: github_document
 ---
 
 ## Exploring the Cancer Genome Atlas
