@@ -1,0 +1,1 @@
+"0","to.rm  <-  unique(which(meancounts[,1:2]== 0,arr.ind = TRUE)[,1])"

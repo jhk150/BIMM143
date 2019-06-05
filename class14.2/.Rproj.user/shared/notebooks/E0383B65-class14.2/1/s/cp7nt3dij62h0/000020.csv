@@ -1,0 +1,65 @@
+"0","library(DESeq2)"
+"0","citation(""DESeq2"")"
+"1","
+"
+"1","  Love, M.I., Huber, W., Anders, S. Moderated estimation of fold change and
+  dispersion for RNA-seq data with DESeq2 Genome Biology 15(12):550 (2014)
+
+A BibTeX entry for LaTeX users is
+
+  @Article{,
+    title = {Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2},
+    author = {Michael I. Love and Wolfgang Huber and Simon Anders},
+    year = {2014},
+    journal = {Genome Biology},
+    doi = {10.1186/s13059-014-0550-8},
+    volume = {15},
+    issue = {12},
+    pages = {550},
+  }
+"
+"1","
+"
+"0","dds <- DESeqDataSetFromMatrix(countData=counts, "
+"0","                              colData=metadata, "
+"0","                              design=~dex, "
+"0","                              tidy=TRUE)"
+"2","converting counts to integer mode
+"
+"2","some variables in design formula are characters, converting to factors"
+"0","dds"
+"1","class:"
+"1"," "
+"1","DESeqDataSet"
+"1"," "
+"1","
+"
+"1","dim:"
+"1"," "
+"1","38694"
+"1"," "
+"1","8"
+"1"," "
+"1","
+"
+"1","metadata(1): version"
+"1","
+"
+"1","assays(1): counts"
+"1","
+"
+"1","rownames(38694): ENSG00000000003 ENSG00000000005 ... ENSG00000283120"
+"1","
+"
+"1","  ENSG00000283123"
+"1","
+"
+"1","rowData names(0):"
+"1","
+"
+"1","colnames(8): SRR1039508 SRR1039509 ... SRR1039520 SRR1039521"
+"1","
+"
+"1","colData names(4): id dex celltype geo_id"
+"1","
+"

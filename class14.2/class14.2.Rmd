@@ -1,0 +1,327 @@
+---
+title: "class 14"
+author: "Ji H. Kang"
+output: github_document
+---
+
+```{r}
+counts <- read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE, row.names = 1)
+metadata <-  read.csv("airway_metadata.csv", stringsAsFactors = FALSE)
+```
+
+There are "r nrow(counts)" genes in this dataset
+```{r}
+nrow(counts)
+```
+
+Lets check the correspondence of our countDATA cols and our meta Data rows. this will be required when we use DESeq later!
+
+```{r}
+colnames(counts)
+```
+
+```{r}
+metadata$id
+```
+
+```{r}
+colnames(counts) == metadata$id
+```
+
+are they ALL correct?
+
+```{r}
+all(colnames(counts) == metadata$id)
+```
+
+## Section 3. Walk through of gene expression analysis
+
+Our metadata file tells us which columns of the countData are drug treated and control (i.e. non drugged)
+
+Extract dex column: control/treated
+```{r}
+metadata$dex
+```
+
+```{r}
+metadata$dex == "control"
+```
+
+
+```{r}
+control.inds <- metadata$dex == "control"
+control <-  metadata[control.inds,]
+control
+```
+
+```{r}
+control$id
+```
+
+```{r}
+head( counts[,control$id])
+```
+
+
+```{r}
+rowSums(counts [, control$id]) /4
+```
+
+Q1. How would you make the above code more robust? What would happen if you were to add more samples. Would the values obtained with the excat code above be correct?
+
+determine the mean count values for all genes across the control experiment
+```{r}
+control.mean <-  rowSums(counts[ , control$id])/ length(control$id)
+control.mean
+```
+
+determine the mean count values for all genes across the drug experiment
+
+
+```{r}
+metadata$dex == "treated"
+```
+
+
+
+```{r}
+treated.inds <- metadata$dex == "treated"
+treated <-  metadata[treated.inds,]
+treated
+```
+
+```{r}
+treated$id
+```
+
+```{r}
+head( counts[,treated$id])
+```
+
+```{r}
+rowSums(counts [, treated$id]) /4
+```
+
+```{r}
+rowSums(counts [, treated$id]) /4
+```
+
+
+```{r}
+treated.mean <-  rowSums(counts[ , treated$id])/ length(treated$id)
+treated.mean
+```
+
+Lets store the control.mean and treated.mean together for 
+```{r}
+meancounts <- data.frame(control.mean,treated.mean)
+```
+
+what is the sum sounts accross all genes in control and treated?
+```{r}
+colSums(meancounts)
+```
+
+```{r}
+plot(meancounts)
+```
+
+plot on a log-log scale so we can see our data
+```{r}
+plot(meancounts, log="xy")
+```
+
+
+```{r}
+meancounts$log2fc <- log2(meancounts[,"treated.mean"]/meancounts[,"control.mean"])
+head(meancounts)
+```
+
+we will now remove the NaN and -Inf values
+The NaN is returned when you divide the zero and try to take the log. 
+The -Inf is returned wgen yiy try to take the log of zero
+
+```{r}
+which(meancounts[,1]==0)
+```
+
+```{r}
+which(meancounts[,1:2]==0,arr.ind = TRUE)
+```
+
+
+```{r}
+unique(which(meancounts[,1:2]== 0,arr.ind = TRUE)[,1])
+```
+
+```{r}
+to.rm  <-  unique(which(meancounts[,1:2]== 0,arr.ind = TRUE)[,1])
+```
+
+```{r}
+mycounts <- meancounts[-to.rm,]
+nrow(mycounts)
+```
+
+how many genes are up in the drug treated cell 
+```{r}
+up.inds <-  mycounts$log2fc > 2
+sum(up.inds)
+```
+
+how many are down?
+```{r}
+down.inds <-  mycounts$log2fc < -2
+sum(down.inds)
+```
+
+```{r}
+head(mycounts[up.inds,])
+```
+
+## Section 4. Adding Annotation Data
+
+We can add annotation from a supplied CSV file, such as those available from ENSEMBLE or UCSC. The annotables_grch38.csv annotation table links the unambiguous Ensembl gene ID to other useful annotation like the gene symbol, full gene name, location, Entrez gene ID, etc.
+```{r}
+anno <- read.csv("annotables_grch38.csv")
+head(anno)
+```
+
+
+use the **merge()** function to add the annotation data from the 'anno' object to our RNA-Seq results in 'mycounts'
+
+```{r}
+#use the merge function
+mycounts.anno <-  merge(mycounts, anno, by.x ="row.names", by.y= "ensgene")
+mycounts.anno
+``` 
+
+
+Install these bioconductor annotation packages
+```{r}
+library("AnnotationDbi")
+library("org.Hs.eg.db")
+```
+
+```{r}
+columns(org.Hs.eg.db)
+```
+
+we will use the **mapIds()** function from biconductor to add anootation data to our results
+```{r}
+mycounts$symbol <- mapIds(org.Hs.eg.db, 
+                        keys= row.names(mycounts),    # gene name in our dataset
+                        keytype="ENSEMBL",            # format of our gene names
+                        column = "SYMBOL")            # what new data we want to add
+```
+```{r}
+head(mycounts)
+```
+
+```{r}
+mycounts$entrez <- mapIds(org.Hs.eg.db, 
+                        keys= row.names(mycounts),    # gene name in our dataset
+                        keytype="ENSEMBL",            # format of our gene names
+                        column = "ENTREZID")            # what new data we want to add
+```
+  
+```{r}
+head(mycounts)
+```
+
+
+## Section 5. Use DESeq2
+
+Setup the object needed for DESeq analysis
+
+```{r}
+counts <- read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE)
+metadata <-  read.csv("airway_metadata.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+install.packages("BiocManager")
+BiocManager::install()
+
+# For this class, you'll also need DESeq2:
+BiocManager::install("DESeq2")
+```
+
+```{r}
+library(DESeq2)
+citation("DESeq2")
+```
+
+
+```{r}
+dds <- DESeqDataSetFromMatrix (countData=counts, 
+                              colData=metadata, 
+                              design=~dex, 
+                              tidy=TRUE)
+dds
+```
+```{r}
+dds <- DESeq(dds)
+```
+
+```{r}
+res <- results(dds)
+
+summary(res)
+```
+
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+```{r}
+resSig05 <- subset(as.data.frame(res), padj < 0.05)
+nrow(resSig05)
+```
+
+Store our results as a data.frame. object
+```{r}
+res01 <- as.data.frame(results(dds, alpha= 0.01))
+head(res01)
+```
+
+Lets sort or order our results by the adjusted p-value
+```{r}
+#Example of using order to sort a vector
+x <- c(5,4,1,2)
+x[order(x)]
+```
+
+```{r}
+ord.inds <- order(res01$padj)
+write.csv(res01[ord.inds,], file="signif01_results.csv")
+```
+
+
+##Volcano Plot
+```{r}
+plot(res01$log2FoldChange, res01$padj)
+```
+
+```{r}
+plot(res01$log2FoldChange, log(res01$padj))
+
+```
+
+```{r}
+plot(res01$log2FoldChange, -log(res01$padj))
+
+```
+
+
+```{r}
+# Setup our custom point color vector 
+mycols <- rep("gray", nrow(res01))
+mycols[ res01$padj < 0.01 ]  <- "black" 
+mycols [abs(res01$log2FoldChange)>2] <- "blue"
+
+mycols [(res01$padj < 0.01) & (abs(res01>2))] <- "blue"
+```
+
+

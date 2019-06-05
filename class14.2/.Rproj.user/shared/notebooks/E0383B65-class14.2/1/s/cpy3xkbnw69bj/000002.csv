@@ -1,0 +1,2 @@
+"0","ord.inds <- order(res01$padj)"
+"0","write.csv(res01[ord.inds,], file=""signif01_results.csv"")"

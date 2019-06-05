@@ -1,0 +1,6 @@
+"0","mycounts$symbol <- mapIds(org.Hs.eg.db, "
+"0","                        keys= row.names(mycounts),    # gene name in our dataset"
+"0","                        keytype=""ENSEMBL"",            # format of our gene names"
+"0","                        column = ""SYMBOL"")            # what new data we want to add"
+"2","'select()' returned 1:many mapping between keys and columns
+"

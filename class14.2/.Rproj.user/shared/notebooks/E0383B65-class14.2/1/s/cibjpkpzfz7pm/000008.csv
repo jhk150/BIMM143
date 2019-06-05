@@ -1,0 +1,5 @@
+"0","# Setup our custom point color vector "
+"0","mycols <- rep(""gray"", nrow(res01))"
+"0","mycols[ res01$padj < 0.01 ]  <- ""black"" "
+"0","mycols [abs(res01$log2FoldChange)>2] <- ""blue"""
+"0","mycols [(res01$padj < 0.01) & (abs(res01>2))] <- ""blue"""

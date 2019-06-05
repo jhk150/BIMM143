@@ -1,0 +1,6 @@
+"0","mycounts <- meancounts[-to.rm,]"
+"0","nrow(mycounts)"
+"1","[1]"
+"1"," 21817"
+"1","
+"

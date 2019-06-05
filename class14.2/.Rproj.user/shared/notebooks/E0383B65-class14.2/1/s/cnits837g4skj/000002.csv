@@ -1,0 +1,2 @@
+"0","res01 <- as.data.frame(results(dds, alpha= 0.01))"
+"0","head(res01)"
