@@ -1,7 +1,6 @@
 ---
 title: 'Class 13'
 author: "Ji H. Kang"
-date: "5/14/2019"
 output: github_document
 ---
 Q5: What proportion of the Mexican Ancestry in Los Angeles sample population (MXL)
