@@ -1,7 +1,6 @@
 ---
 title: 'Class 7: R functions and packages'
 author: "Ji H. Kang"
-date: "4/23/2019"
 output: github_document
 ---
 

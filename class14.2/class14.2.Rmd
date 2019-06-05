@@ -1,7 +1,6 @@
 ---
 title: "Class 14"
 author: "Ji H. Kang"
-date: "5/16/2019"
 output: github_document
 ---
 
