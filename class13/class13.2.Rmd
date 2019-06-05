@@ -1,0 +1,95 @@
+---
+title: 'Class 13'
+author: "Ji H. Kang"
+date: "5/14/2019"
+output: github_document
+---
+Q5: What proportion of the Mexican Ancestry in Los Angeles sample population (MXL)
+are homozygous for the asthma associated SNP (G|G)? 
+
+```{r}
+#Read CSV from ENSEMBLE
+mxl <- read.csv("373531-SampleGenotypes-Homo_sapiens_Variation_Sample_rs8067378 (3).csv")
+head(mxl)
+```
+How many of each genotype are there? 
+
+```{r}
+table(mxl$Genotype..forward.strand.)
+```
+Porportion or precent of total for each genotype
+
+```{r}
+(table(mxl$Genotype..forward.strand.)/ nrow(mxl)) * 100
+```
+
+Answer= 14% 
+
+
+##Quality SCores in FASTQ files
+
+The fourth line of a FASTQ sequence format file encodes the quality score that tells us how good the sequence at a given position is (i.e. how liekly it is to be correct based on the instrument)
+```{r}
+library(seqinr)
+library(gtools)
+#sc
+phred <- asc( s2c("DDDDCDEDCDDDDBBDDDCC@") ) - 33
+phred 
+```
+
+
+## Population Scale Analysis
+Section 4
+
+Read RNA-Seq data with genotype information results table
+
+```{r}
+expr <- read.table("rs8067378_ENSG00000172057.6.txt",row.names = 1)
+
+head(expr)
+
+```
+
+Min/max/median values
+```{r}
+summary(expr)
+```
+
+Which samples are G/G?
+```{r}
+inds <- expr$geno == "G/G"
+#true false
+#return G/G
+expr[inds,]
+```
+
+```{r}
+inds <- expr$geno == "G/G"
+#true false
+#return G/G
+expr[inds,"exp"]
+```
+
+```{r}
+inds <- expr$geno == "G/G"
+
+summary(expr[inds,"exp"])
+```
+
+```{r}
+inds <- expr$geno == "A/G"
+
+summary(expr[inds,"exp"])
+```
+
+```{r}
+inds <- expr$geno == "A/A"
+
+summary(expr[inds,"exp"])
+```
+
+BOXPLOT
+```{r}
+boxplot(exp ~ geno ,data=expr)
+```
+definitely a difference between the expression 
