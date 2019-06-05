@@ -1,0 +1,131 @@
+---
+title: '18'
+author: "Ji H. Kang"
+date: "5/30/2019"
+output: html_document
+---
+
+## Exploring the Cancer Genome Atlas
+Install the packages we need
+
+```{r eval=FALSE}
+BiocManager::install(c("GenomicDataCommons", "TCGAbiolinks", "maftools"))
+```
+
+load the packages, as usual
+```{r}
+library(GenomicDataCommons)
+library(TCGAbiolinks)
+library(maftools)
+```
+
+GDC status:
+
+```{r}
+GenomicDataCommons::status()
+```
+
+## Query the GDC from R
+```{r}
+cases_by_project <- cases() %>%
+  facet("project.project_id") %>%
+  aggregations()
+head(cases_by_project)
+```
+
+Q9. Write the R code to make a barplot of the cases per project. Lets plot this data with a log scale for the y axis (log="y"), rotated axis labels (las=2) and color the bar coresponding to the TCGA-PAAD project.
+```{r}
+x <- cases_by_project$project.project_id
+
+# Make a custom color vector for our plot
+colvec <- rep("lightblue", nrow(x))
+colvec[] <- "red"
+
+# Plot with 'log' for y axis and rotate labels with 'las'
+#par(___)  
+barplot(x$doc_count, names.arg=x$key, log="y", col=colvec, las=2)
+```
+
+```{r}
+# Make a custom color vector for our plot
+colvec <- rep("lightblue", nrow(x))
+colvec[29] <- "red"
+
+# Plot with 'log' for y axis and rotate labels with 'las'
+#par(___)  
+barplot(x$doc_count, names.arg=x$key, log="y", col=colvec, las=2)
+```
+
+##PART 2: Designing a Personalized Cancer Vaccine
+#Section 1: Protein sequences from healthy and tumor tissue
+TASK: identify tumor specific mutations that could potentially be used for vaccine development 
+Q1:Identify sequence regions that contain all 9-mer peptides that are only found in the tumor. 
+Hint: You will need to first identify the sites of mutation in the above sequences and then extract the surrounding subsequence region. This subsequence should encompass all possible 9-mers in the tumor derived sequence. In other words extract the subsequence from 8 residues before and 8 residues after all point mutations in the tumor sequence.
+IDENTIFY TUMOR SPECIFIC 9-mer peptides
+```{r}
+library(bio3d)
+seqs <- read.fasta("lecture18_sequences.fa")
+seqs
+```
+
+
+FIND THE DIFFERENCES BETWEEN THE SEQUENES: MUTATIONS
+```{r}
+ide <- conserv(seqs, method = "identity")
+ide
+```
+```{r}
+which(ide<1)
+```
+
+
+```{r}
+miss.match.sites <- which (ide < 1)
+gap.sites <- gap.inspect(seqs)$t.inds
+```
+
+
+
+```{r}
+tumor.sites <-miss.match.sites[ !miss.match.sites %in% gap.sites]
+tumor.sites
+```
+
+Now get the sequence with all possible 9-mers
+```{r}
+start.position <- tumor.sites - 8
+end.position <- tumor.sites + 8
+```
+
+
+```{r}
+start.position[1] : end.position[1]
+```
+
+Get tumor sequence
+```{r}
+seqs$ali[2,]
+```
+
+
+```{r}
+seqs$ali[2, start.position[1] : end.position[1]]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
